@@ -1,42 +1,94 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>変換ツール</title>
+  <title>文字変換ツール</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 1em;
+      background: #f7f7f7;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+      margin-bottom: 1em;
+      font-size: 1em;
+    }
+    button {
+      padding: 0.5em 1em;
+      font-size: 1em;
+    }
+  </style>
 </head>
 <body>
-  <h1>つ→tsuの変換例</h1>
-  <textarea id="input" rows="5" cols="50" placeholder="ここに入力"></textarea><br>
-  <button onclick="convert()">変換</button><br>
-  <textarea id="output" rows="5" cols="50" readonly></textarea>
+  <h1>カスタム文字変換ツール</h1>
+  <textarea id="input" placeholder="ここに文字を入力してください"></textarea><br>
+  <button onclick="convert()">変換</button><br><br>
+  <textarea id="output" placeholder="変換結果がここに表示されます" readonly></textarea>
 
   <script>
-    // 辞書型（変換ルール）
-    const transformMap = {
-      'tsu': 'つ',
-      'shi': 'し',
-      'chi': 'ち',
-      'ka': 'か',
-      'a': 'あ',
-      'i': 'い',
-      'u': 'う',
-      'e': 'え',
-      'o': 'お'
-    };
-
     function convert() {
-      let input = document.getElementById('input').value;
+      const input = document.getElementById('input').value;
       let output = '';
       let i = 0;
+
+      const vowels = ['a', 'e', 'i', 'o', 'u', 'ä', 'ö', 'ü', 'ï', 'y'];
+
+      const transformMap = {
+        'ć': 'ц',
+        'č': 'ќ',
+        'ç': 'ч',
+        'ck': 'к̋',
+        'd': 'д',
+        'đ': 'џ',
+        'dg': 'г̋',
+        'e': 'э',
+        'f': 'ф',
+        'g': 'г',
+        'h': 'х',
+        'ï': 'і',
+        'k': 'к',
+        'l': 'л',
+        'ļ': 'Ӆ',
+        'm': 'м',
+        'n': 'н',
+        'ñ': 'ӊ',
+        'o': 'о',
+        'ö': 'ä',
+        'p': 'π',
+        'q': 'ҟ',
+        'r': 'р',
+        'ř': 'ҏ',
+        's': 'с',
+        'ş': 'ш',
+        't': 'т',
+        'u': 'у',
+        'ü': 'Ӱ',
+        'v': 'в',
+        'x': 'ҳ',
+        'y': 'ј',
+        'z': 'з'
+      };
+
+      function preserveCase(original, converted) {
+        if (original.toUpperCase() === original && original.toLowerCase() !== original) {
+          return converted.toUpperCase();
+        }
+        if (original[0] === original[0].toUpperCase()) {
+          return converted[0].toUpperCase() + converted.slice(1);
+        }
+        return converted;
+      }
 
       while (i < input.length) {
         let matched = false;
 
-        // 長いキー順に優先して調べる（重要！）
         for (let key of Object.keys(transformMap).sort((a, b) => b.length - a.length)) {
-          if (input.substring(i, i + key.length) === key) {
-            output += transformMap[key];
+          const part = input.substring(i, i + key.length);
+          if (part.toLowerCase() === key) {
+            const converted = transformMap[key];
+            output += preserveCase(part, converted);
             i += key.length;
             matched = true;
             break;
@@ -44,8 +96,29 @@
         }
 
         if (!matched) {
-          output += input[i];  // 一致なし → そのまま
-          i++;
+          const char = input[i];
+          const prevChar = i > 0 ? input[i - 1] : '';
+          const nextChar = input[i + 1] || '';
+          const isVowelAfter = vowels.includes(nextChar.toLowerCase());
+          const isVowelBefore = vowels.includes(prevChar.toLowerCase());
+
+          if (char.toLowerCase() === 'i') {
+            let replacement;
+
+            if (i === 0 || /\s|[.,;!?]/.test(prevChar)) {
+              replacement = 'и';
+            } else if (!isVowelBefore && isVowelAfter) {
+              replacement = 'ь';
+            } else {
+              replacement = 'и';
+            }
+
+            output += preserveCase(char, replacement);
+            i++;
+          } else {
+            output += char;
+            i++;
+          }
         }
       }
 
@@ -54,3 +127,4 @@
   </script>
 </body>
 </html>
+
