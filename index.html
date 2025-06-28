@@ -22,8 +22,8 @@
   </style>
 </head>
 <body>
-  <h1>カスタム文字変換ツール</h1>
-  <textarea id="input" placeholder="ここに文字を入力してください"></textarea><br>
+  <h1>ペングリア語キリル文字変換センター</h1>
+  <textarea id="input" placeholder="ここにアルファベットを入力してください"></textarea><br>
   <button onclick="convert()">変換</button><br><br>
   <textarea id="output" placeholder="変換結果がここに表示されます" readonly></textarea>
 
@@ -36,6 +36,8 @@
       const vowels = ['a', 'e', 'i', 'o', 'u', 'ä', 'ö', 'ü', 'ï', 'y'];
 
       const transformMap = {
+        'a': 'а',
+        'b': 'б',
         'ć': 'ц',
         'č': 'ќ',
         'ç': 'ч',
