@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>変換ツール</title>
+</head>
+<body>
+  <h1>つ→tsuの変換例</h1>
+  <textarea id="input" rows="5" cols="50" placeholder="ここに入力"></textarea><br>
+  <button onclick="convert()">変換</button><br>
+  <textarea id="output" rows="5" cols="50" readonly></textarea>
+
+  <script>
+    // 辞書型（変換ルール）
+    const transformMap = {
+      'tsu': 'つ',
+      'shi': 'し',
+      'chi': 'ち',
+      'ka': 'か',
+      'a': 'あ',
+      'i': 'い',
+      'u': 'う',
+      'e': 'え',
+      'o': 'お'
+    };
+
+    function convert() {
+      let input = document.getElementById('input').value;
+      let output = '';
+      let i = 0;
+
+      while (i < input.length) {
+        let matched = false;
+
+        // 長いキー順に優先して調べる（重要！）
+        for (let key of Object.keys(transformMap).sort((a, b) => b.length - a.length)) {
+          if (input.substring(i, i + key.length) === key) {
+            output += transformMap[key];
+            i += key.length;
+            matched = true;
+            break;
+          }
+        }
+
+        if (!matched) {
+          output += input[i];  // 一致なし → そのまま
+          i++;
+        }
+      }
+
+      document.getElementById('output').value = output;
+    }
+  </script>
+</body>
+</html>
